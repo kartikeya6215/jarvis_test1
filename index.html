@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JARVIS Pro Ultra</title>
+  <style>
+    :root {
+      --jarvis-blue: #58a6ff;
+      --jarvis-green: #3fb950;
+      --jarvis-red: #ff7b72;
+      --bg-dark: #0b0f17;
+      --card-bg: rgba(15, 20, 30, 0.9);
+      --text-light: #c9d1d9;
+    }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-light);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 0 30px rgba(88, 166, 255, 0.2);
+    }
+    #response-container {
+      background-color: #161b22;
+      padding: 20px;
+      border-radius: 12px;
+      min-height: 200px;
+      max-height: 400px;
+      overflow-y: auto;
+      margin: 20px 0;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button {
+      background-color: var(--jarvis-green);
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      min-width: 150px;
+    }
+    #micButton.listening {
+      background-color: var(--jarvis-red);
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(255,123,114,0.7); }
+      70% { box-shadow: 0 0 0 15px rgba(255,123,114,0); }
+      100% { box-shadow: 0 0 0 0 rgba(255,123,114,0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1 style="text-align:center;color:#58a6ff">JARVIS Pro Ultra</h1>
+    <p style="text-align:center">Your complete AI assistant with full device control</p>
+    
+    <div id="response-container">
+      <div style="background:rgba(63,185,80,0.15);padding:10px;border-left:3px solid #3fb950;border-radius:8px;margin-bottom:10px">
+        <strong>JARVIS:</strong> Systems online. How may I assist you?
+      </div>
+    </div>
+    
+    <div class="controls">
+      <button id="micButton" onclick="toggleListening()">
+        <span id="micIcon">🎤</span> <span id="micText">Start Listening</span>
+      </button>
+      <button onclick="resetConversation()">🔄 Reset</button>
+      <button onclick="requestPermissions()">🔐 Permissions</button>
+    </div>
+    
+    <div style="margin-top:20px;background:rgba(22,27,34,0.7);padding:15px;border-radius:8px">
+      <h3 style="color:#58a6ff;margin-top:0">Available Commands:</h3>
+      <ul style="columns:2;padding-left:20px">
+        <li>"Open [App]"</li>
+        <li>"Call [Contact]"</li>
+        <li>"Message [Contact] [Text]"</li>
+        <li>"Turn on/off flashlight"</li>
+        <li>"What's my battery?"</li>
+        <li>"Set alarm for [time]"</li>
+        <li>"Navigate to [location]"</li>
+        <li>"Take a photo"</li>
+        <li>"Read notifications"</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Configuration
+    const contacts = {
+      "mom": { number: "1234567890" },
+      "dad": { number: "1234567891" }
+    };
+    
+    // DOM Elements
+    const responseContainer = document.getElementById('response-container');
+    const micButton = document.getElementById('micButton');
+    
+    // System State
+    let isListening = false;
+    let recognition;
+    
+    // Core Functions
+    function addMessage(sender, text) {
+      const messageDiv = document.createElement('div');
+      messageDiv.style = "background:rgba(63,185,80,0.15);padding:10px;border-left:3px solid #3fb950;border-radius:8px;margin-bottom:10px";
+      messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      responseContainer.appendChild(messageDiv);
+      responseContainer.scrollTop = responseContainer.scrollHeight;
+    }
+    
+    function toggleListening() {
+      if (isListening) {
+        stopListening();
+      } else {
+        startListening();
+      }
+    }
+    
+    function startListening() {
+      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+      recognition.lang = 'en-US';
+      recognition.onresult = (event) => {
+        const command = event.results[0][0].transcript;
+        processCommand(command);
+      };
+      recognition.start();
+      isListening = true;
+      micButton.classList.add('listening');
+      document.getElementById('micText').textContent = 'Listening...';
+      addMessage("System", "Listening...");
+    }
+    
+    function stopListening() {
+      recognition.stop();
+      isListening = false;
+      micButton.classList.remove('listening');
+      document.getElementById('micText').textContent = 'Start Listening';
+    }
+    
+    // Command Processing
+    function processCommand(command) {
+      const lowerCommand = command.toLowerCase();
+      addMessage("You", command);
+      
+      if (/(call|phone)\s+(.+)/i.test(command)) {
+        const contact = command.match(/(call|phone)\s+(.+)/i)[2].toLowerCase();
+        if (contacts[contact]) {
+          window.location.href = `tel:${contacts[contact].number}`;
+          addMessage("JARVIS", `Calling ${contact}...`);
+        } else {
+          addMessage("JARVIS", `Contact "${contact}" not found`);
+        }
+      }
+      else if (/(message|text)\s+(.+?)\s+(.+)/i.test(command)) {
+        const match = command.match(/(message|text)\s+(.+?)\s+(.+)/i);
+        const contact = match[2].toLowerCase();
+        const message = match[3];
+        if (contacts[contact]) {
+          window.location.href = `sms:${contacts[contact].number}?body=${encodeURIComponent(message)}`;
+          addMessage("JARVIS", `Messaging ${contact}: "${message}"`);
+        } else {
+          addMessage("JARVIS", `Contact "${contact}" not found`);
+        }
+      }
+      else if (/open\s+(.+)/i.test(command)) {
+        const app = command.match(/open\s+(.+)/i)[1].toLowerCase();
+        const apps = {
+          "youtube": "https://youtube.com",
+          "whatsapp": "https://whatsapp.com",
+          "instagram": "https://instagram.com",
+          "facebook": "https://facebook.com"
+        };
+        if (apps[app]) {
+          window.open(apps[app], '_blank');
+          addMessage("JARVIS", `Opening ${app}`);
+        } else {
+          addMessage("JARVIS", `App "${app}" not configured`);
+        }
+      }
+      else {
+        addMessage("JARVIS", "Command not recognized");
+      }
+      
+      stopListening();
+    }
+    
+    // Helper Functions
+    function resetConversation() {
+      responseContainer.innerHTML = '';
+      addMessage("JARVIS", "Systems reset. How may I assist you?");
+    }
+    
+    function requestPermissions() {
+      navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(() => addMessage("System", "Microphone access granted"))
+        .catch(() => addMessage("System", "Microphone access denied"));
+    }
+    
+    // Initialize
+    window.addEventListener('load', () => {
+      if (!('webkitSpeechRecognition' in window)) {
+        addMessage("System", "Speech recognition not supported");
+      }
+    });
+  </script>
+</body>
+</html>
