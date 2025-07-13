@@ -2,8 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>JARVIS Pro Ultra</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0b0f17">
+  <title>JARVIS Pro - Advanced</title>
   <style>
     :root {
       --jarvis-blue: #58a6ff;
@@ -13,9 +14,10 @@
       --card-bg: rgba(15, 20, 30, 0.9);
       --text-light: #c9d1d9;
     }
+    
     body {
       margin: 0;
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Segoe UI', system-ui, sans-serif;
       background-color: var(--bg-dark);
       color: var(--text-light);
       display: flex;
@@ -23,7 +25,10 @@
       align-items: center;
       min-height: 100vh;
       padding: 20px;
+      box-sizing: border-box;
+      line-height: 1.6;
     }
+    
     .container {
       width: 100%;
       max-width: 800px;
@@ -31,194 +36,711 @@
       padding: 25px;
       border-radius: 16px;
       box-shadow: 0 0 30px rgba(88, 166, 255, 0.2);
+      margin: auto;
     }
+    
+    h1 {
+      color: var(--jarvis-blue);
+      text-shadow: 0 0 15px rgba(88, 166, 255, 0.5);
+      margin-top: 0;
+      font-size: 2rem;
+      text-align: center;
+    }
+    
     #response-container {
+      margin: 25px 0;
       background-color: #161b22;
       padding: 20px;
       border-radius: 12px;
       min-height: 200px;
       max-height: 400px;
       overflow-y: auto;
-      margin: 20px 0;
+      box-shadow: inset 0 0 15px rgba(0,0,0,0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
+    
+    .message {
+      padding: 10px 15px;
+      border-radius: 8px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+    
+    .user-message {
+      background: rgba(88, 166, 255, 0.15);
+      border-left: 3px solid var(--jarvis-blue);
+      align-self: flex-end;
+    }
+    
+    .jarvis-message {
+      background: rgba(63, 185, 80, 0.15);
+      border-left: 3px solid var(--jarvis-green);
+      align-self: flex-start;
+    }
+    
+    .error-message {
+      background: rgba(255, 123, 114, 0.15);
+      border-left: 3px solid var(--jarvis-red);
+    }
+    
     .controls {
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 15px;
       justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
     }
+    
     button {
       background-color: var(--jarvis-green);
       color: white;
-      padding: 12px 20px;
+      padding: 12px 25px;
+      font-size: 1.1rem;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      min-width: 150px;
+      transition: all 0.2s;
+      flex: 1;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
+    
+    button:hover {
+      background-color: #2ea043;
+      transform: translateY(-2px);
+    }
+    
+    button:active {
+      transform: translateY(0);
+    }
+    
     #micButton.listening {
-      background-color: var(--jarvis-red);
       animation: pulse 1.5s infinite;
+      background-color: var(--jarvis-red);
     }
+    
     @keyframes pulse {
-      0% { box-shadow: 0 0 0 0 rgba(255,123,114,0.7); }
-      70% { box-shadow: 0 0 0 15px rgba(255,123,114,0); }
-      100% { box-shadow: 0 0 0 0 rgba(255,123,114,0); }
+      0% { box-shadow: 0 0 0 0 rgba(255, 123, 114, 0.7); }
+      70% { box-shadow: 0 0 0 12px rgba(255, 123, 114, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(255, 123, 114, 0); }
+    }
+    
+    .status {
+      text-align: center;
+      margin: 15px 0;
+      font-size: 0.9rem;
+      color: #8b949e;
+    }
+    
+    .command-list {
+      background: rgba(22, 27, 34, 0.7);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 25px;
+    }
+    
+    .command-list h3 {
+      color: var(--jarvis-blue);
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    
+    .command-list ul {
+      padding-left: 20px;
+      margin: 0;
+      columns: 2;
+    }
+    
+    .command-list li {
+      margin-bottom: 8px;
+      break-inside: avoid;
+    }
+    
+    @media (max-width: 600px) {
+      .container {
+        padding: 15px;
+      }
+      
+      .command-list ul {
+        columns: 1;
+      }
+      
+      button {
+        min-width: 100%;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1 style="text-align:center;color:#58a6ff">JARVIS Pro Ultra</h1>
-    <p style="text-align:center">Your complete AI assistant with full device control</p>
+    <h1>JARVIS Pro Advanced</h1>
+    <p style="text-align: center;">Your complete AI assistant with full device integration</p>
     
     <div id="response-container">
-      <div style="background:rgba(63,185,80,0.15);padding:10px;border-left:3px solid #3fb950;border-radius:8px;margin-bottom:10px">
-        <strong>JARVIS:</strong> Systems online. How may I assist you?
-      </div>
+      <div class="message jarvis-message">JARVIS: Initializing advanced systems...</div>
     </div>
+    
+    <div class="status" id="status">Status: Loading...</div>
     
     <div class="controls">
       <button id="micButton" onclick="toggleListening()">
         <span id="micIcon">🎤</span> <span id="micText">Start Listening</span>
       </button>
-      <button onclick="resetConversation()">🔄 Reset</button>
-      <button onclick="requestPermissions()">🔐 Permissions</button>
+      <button onclick="resetConversation()">
+        🔄 Reset
+      </button>
+      <button onclick="requestPermissions()">
+        🔐 Grant Permissions
+      </button>
     </div>
     
-    <div style="margin-top:20px;background:rgba(22,27,34,0.7);padding:15px;border-radius:8px">
-      <h3 style="color:#58a6ff;margin-top:0">Available Commands:</h3>
-      <ul style="columns:2;padding-left:20px">
+    <div class="command-list">
+      <h3>Advanced Commands:</h3>
+      <ul>
         <li>"Open [App]"</li>
         <li>"Call [Contact]"</li>
         <li>"Message [Contact] [Text]"</li>
-        <li>"Turn on/off flashlight"</li>
-        <li>"What's my battery?"</li>
+        <li>"Turn on/off [Flashlight/WiFi/Bluetooth]"</li>
         <li>"Set alarm for [time]"</li>
         <li>"Navigate to [location]"</li>
         <li>"Take a photo"</li>
-        <li>"Read notifications"</li>
+        <li>"Read my notifications"</li>
+        <li>"What's my battery level?"</li>
+        <li>"Enable/Disable [setting]"</li>
+        <li>"Play music/lofi"</li>
+        <li>"What's the time?"</li>
+        <li>"Show me the news"</li>
+        <li>"Who is [person]?"</li>
+        <li>"How's the weather?"</li>
+        <li>"Tell me a joke"</li>
+        <li>"Calculate [math problem]"</li>
+        <li>"Stop listening"</li>
       </ul>
     </div>
   </div>
 
   <script>
-    // Configuration
-    const contacts = {
-      "mom": { number: "1234567890" },
-      "dad": { number: "1234567891" }
+    // Enhanced System Configuration
+    const config = {
+      userName: "Sir",
+      assistantName: "JARVIS Pro Advanced",
+      defaultVoice: {
+        lang: 'en-IN',
+        rate: 1.0,
+        pitch: 0.9
+      },
+      appDeepLinks: {
+        youtube: "https://youtube.com",
+        phone: "tel:",
+        camera: "android.media.action.IMAGE_CAPTURE",
+        gallery: "content://media/external/images/media",
+        calculator: "calc:",
+        facebook: "https://facebook.com",
+        instagram: "https://instagram.com",
+        whatsapp: "https://whatsapp.com",
+        twitter: "https://twitter.com",
+        chrome: "googlechrome://",
+        music: "https://music.youtube.com",
+        maps: "https://maps.google.com",
+        gmail: "https://mail.google.com",
+        news: "https://news.google.com"
+      },
+      contacts: {
+        "mom": { name: "Mom", number: "1234567890" },
+        "dad": { name: "Dad", number: "1234567891" }
+      },
+      deviceSettings: {
+        wifi: false,
+        bluetooth: false,
+        flashlight: false
+      }
     };
-    
+
     // DOM Elements
     const responseContainer = document.getElementById('response-container');
+    const statusElement = document.getElementById('status');
     const micButton = document.getElementById('micButton');
+    const micIcon = document.getElementById('micIcon');
+    const micText = document.getElementById('micText');
     
     // System State
-    let isListening = false;
     let recognition;
-    
-    // Core Functions
-    function addMessage(sender, text) {
-      const messageDiv = document.createElement('div');
-      messageDiv.style = "background:rgba(63,185,80,0.15);padding:10px;border-left:3px solid #3fb950;border-radius:8px;margin-bottom:10px";
-      messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      responseContainer.appendChild(messageDiv);
-      responseContainer.scrollTop = responseContainer.scrollHeight;
+    let isListening = false;
+    let isInitialized = false;
+    let speechSynthesis = window.speechSynthesis;
+    let maleVoice;
+    let appOpened = false;
+
+    // Initialize JARVIS
+    async function initializeJarvis() {
+      addMessage(config.assistantName, "Initializing all systems...");
+      
+      // Load voices
+      await loadVoices();
+      
+      // Check for speech recognition support
+      if (!('webkitSpeechRecognition' in window)) {
+        showError("Speech recognition not supported in your browser");
+        return false;
+      }
+      
+      // Check microphone permissions
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        stream.getTracks().forEach(track => track.stop());
+      } catch (error) {
+        showError("Microphone access denied. Please enable permissions.");
+        return false;
+      }
+      
+      isInitialized = true;
+      addMessage(config.assistantName, `Systems online. How may I assist you today, ${config.userName}?`);
+      speak(`Systems online. How may I assist you today, ${config.userName}?`);
+      return true;
     }
-    
-    function toggleListening() {
+
+    // Load available voices
+    function loadVoices() {
+      return new Promise((resolve) => {
+        const voices = speechSynthesis.getVoices();
+        if (voices.length > 0) {
+          maleVoice = voices.find(v => v.name.includes('Male') || v.lang.includes('en'));
+          resolve();
+        } else {
+          speechSynthesis.onvoiceschanged = () => {
+            maleVoice = speechSynthesis.getVoices().find(v => v.name.includes('Male') || v.lang.includes('en'));
+            resolve();
+          };
+        }
+      });
+    }
+
+    // Voice synthesis
+    function speak(text) {
+      if (speechSynthesis.speaking) {
+        speechSynthesis.cancel();
+      }
+      
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = config.defaultVoice.lang;
+      utterance.rate = config.defaultVoice.rate;
+      utterance.pitch = config.defaultVoice.pitch;
+      
+      if (maleVoice) {
+        utterance.voice = maleVoice;
+      }
+      
+      utterance.onend = () => {
+        if (isListening && !appOpened) {
+          setTimeout(startListening, 500);
+        }
+      };
+      
+      speechSynthesis.speak(utterance);
+    }
+
+    // Toggle listening state
+    async function toggleListening() {
+      if (!isInitialized) {
+        const initialized = await initializeJarvis();
+        if (!initialized) return;
+      }
+      
       if (isListening) {
         stopListening();
       } else {
         startListening();
       }
     }
-    
+
+    // Start speech recognition (Optimized Version)
     function startListening() {
-      recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-      recognition.lang = 'en-US';
-      recognition.onresult = (event) => {
-        const command = event.results[0][0].transcript;
-        processCommand(command);
-      };
-      recognition.start();
-      isListening = true;
-      micButton.classList.add('listening');
-      document.getElementById('micText').textContent = 'Listening...';
-      addMessage("System", "Listening...");
+      try {
+        if (recognition) {
+          recognition.stop();
+          recognition = null;
+        }
+        
+        recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-IN';
+        recognition.interimResults = false;
+        recognition.maxAlternatives = 1;
+        recognition.continuous = false;
+        
+        recognition.onstart = () => {
+          isListening = true;
+          appOpened = false;
+          micButton.classList.add('listening');
+          micIcon.textContent = '🛑';
+          micText.textContent = 'Listening...';
+          statusElement.textContent = 'Status: Active (Speak Now)';
+          addMessage("System", "Ready for your command...");
+        };
+        
+        recognition.onresult = (event) => {
+          const command = event.results[0][0].transcript;
+          if (command.trim().length > 2) {
+            addMessage("You", command);
+            processCommand(command);
+          }
+        };
+        
+        recognition.onerror = (event) => {
+          if (event.error !== 'no-speech') {
+            showError(`Error: ${event.error}`);
+          }
+          stopListening();
+        };
+        
+        recognition.onend = () => {
+          if (isListening && !appOpened) {
+            setTimeout(startListening, 1000);
+          }
+        };
+        
+        recognition.start();
+      } catch (error) {
+        showError(`Failed to start recognition: ${error}`);
+      }
     }
-    
+
+    // Stop speech recognition
     function stopListening() {
-      recognition.stop();
+      if (recognition) {
+        recognition.stop();
+      }
       isListening = false;
       micButton.classList.remove('listening');
-      document.getElementById('micText').textContent = 'Start Listening';
+      micIcon.textContent = '🎤';
+      micText.textContent = 'Start Listening';
+      statusElement.textContent = 'Status: Ready';
+      addMessage("System", "Listening stopped");
     }
-    
-    // Command Processing
-    function processCommand(command) {
-      const lowerCommand = command.toLowerCase();
-      addMessage("You", command);
+
+    // Enhanced app opening with advanced solution
+    function openAppOrWebsite(appKey) {
+      appOpened = true;
+      const url = config.appDeepLinks[appKey];
       
-      if (/(call|phone)\s+(.+)/i.test(command)) {
-        const contact = command.match(/(call|phone)\s+(.+)/i)[2].toLowerCase();
-        if (contacts[contact]) {
-          window.location.href = `tel:${contacts[contact].number}`;
-          addMessage("JARVIS", `Calling ${contact}...`);
-        } else {
-          addMessage("JARVIS", `Contact "${contact}" not found`);
+      if (!url) {
+        showError(`No configuration found for ${appKey}`);
+        return;
+      }
+
+      // For web links, open in new tab
+      if (url.startsWith('http')) {
+        const newWindow = window.open(url, '_blank');
+        
+        // If popup was blocked, fallback to current tab
+        if (!newWindow || newWindow.closed || typeof newWindow.closed == 'undefined') {
+          window.location.href = url;
+        }
+      } else {
+        // For app deep links
+        try {
+          window.location.href = url;
+        } catch (e) {
+          showError(`Failed to open ${appKey}`);
         }
       }
+    }
+
+    // Advanced Functions
+    async function requestPermissions() {
+      try {
+        const permissions = [
+          {name: 'microphone'},
+          {name: 'camera'},
+          {name: 'geolocation'},
+          {name: 'notifications'},
+          {name: 'contacts'}
+        ];
+        
+        for (const permission of permissions) {
+          const status = await navigator.permissions.query(permission);
+          if (status.state !== 'granted') {
+            await navigator.permissions.request(permission);
+          }
+        }
+        
+        addMessage("System", "Permissions granted successfully");
+        speak("All permissions granted");
+      } catch (error) {
+        showError(`Permission error: ${error.message}`);
+      }
+    }
+
+    async function makeCall(number) {
+      try {
+        window.location.href = `tel:${number}`;
+      } catch (error) {
+        showError("Failed to initiate call");
+      }
+    }
+
+    async function sendSMS(number, message) {
+      try {
+        window.location.href = `sms:${number}?body=${encodeURIComponent(message)}`;
+      } catch (error) {
+        showError("Failed to send message");
+      }
+    }
+
+    async function toggleWifi() {
+      // Note: This requires a companion app on Android
+      config.deviceSettings.wifi = !config.deviceSettings.wifi;
+      addMessage("System", `WiFi turned ${config.deviceSettings.wifi ? 'on' : 'off'}`);
+      speak(`WiFi turned ${config.deviceSettings.wifi ? 'on' : 'off'}`);
+    }
+
+    async function toggleBluetooth() {
+      config.deviceSettings.bluetooth = !config.deviceSettings.bluetooth;
+      addMessage("System", `Bluetooth turned ${config.deviceSettings.bluetooth ? 'on' : 'off'}`);
+      speak(`Bluetooth turned ${config.deviceSettings.bluetooth ? 'on' : 'off'}`);
+    }
+
+    async function toggleFlashlight() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'environment' }
+        });
+        const track = stream.getVideoTracks()[0];
+        await track.applyConstraints({
+          advanced: [{ torch: !config.deviceSettings.flashlight }]
+        });
+        config.deviceSettings.flashlight = !config.deviceSettings.flashlight;
+        addMessage("System", `Flashlight turned ${config.deviceSettings.flashlight ? 'on' : 'off'}`);
+        speak(`Flashlight turned ${config.deviceSettings.flashlight ? 'on' : 'off'}`);
+      } catch (error) {
+        showError("Flashlight not available");
+      }
+    }
+
+    async function getBatteryLevel() {
+      try {
+        const battery = await navigator.getBattery();
+        const level = Math.round(battery.level * 100);
+        addMessage("System", `Battery level is ${level}%`);
+        speak(`Battery level is ${level} percent`);
+      } catch (error) {
+        showError("Could not read battery level");
+      }
+    }
+
+    // Enhanced processCommand()
+    function processCommand(command) {
+      const lowerCommand = command.toLowerCase();
+      let response = "";
+      let appKey = "";
+      
+      // Extract app name from "open [appname]" commands
+      if (lowerCommand.startsWith('open ')) {
+        const requestedApp = lowerCommand.replace('open ', '').trim();
+        
+        // Find matching app key (supports partial matches)
+        appKey = Object.keys(config.appDeepLinks).find(key => 
+          key.includes(requestedApp) || requestedApp.includes(key)
+        ) || requestedApp;
+        
+        if (appKey && config.appDeepLinks[appKey]) {
+          response = `Opening ${appKey}, Sir.`;
+          addMessage(config.assistantName, response);
+          speak(response);
+          openAppOrWebsite(appKey);
+          stopListening();
+          return;
+        }
+      }
+      
+      // Call commands
+      if (/(call|phone)\s+(.+)/i.test(command)) {
+        const contact = command.match(/(call|phone)\s+(.+)/i)[2].toLowerCase();
+        if (config.contacts[contact]) {
+          response = `Calling ${config.contacts[contact].name}, Sir.`;
+          addMessage(config.assistantName, response);
+          speak(response);
+          makeCall(config.contacts[contact].number);
+        } else {
+          showError(`Contact ${contact} not found`);
+        }
+      }
+      // Message commands
       else if (/(message|text)\s+(.+?)\s+(.+)/i.test(command)) {
         const match = command.match(/(message|text)\s+(.+?)\s+(.+)/i);
         const contact = match[2].toLowerCase();
         const message = match[3];
-        if (contacts[contact]) {
-          window.location.href = `sms:${contacts[contact].number}?body=${encodeURIComponent(message)}`;
-          addMessage("JARVIS", `Messaging ${contact}: "${message}"`);
+        if (config.contacts[contact]) {
+          response = `Sending message to ${config.contacts[contact].name}, Sir.`;
+          addMessage(config.assistantName, response);
+          speak(response);
+          sendSMS(config.contacts[contact].number, message);
         } else {
-          addMessage("JARVIS", `Contact "${contact}" not found`);
+          showError(`Contact ${contact} not found`);
         }
       }
-      else if (/open\s+(.+)/i.test(command)) {
-        const app = command.match(/open\s+(.+)/i)[1].toLowerCase();
-        const apps = {
-          "youtube": "https://youtube.com",
-          "whatsapp": "https://whatsapp.com",
-          "instagram": "https://instagram.com",
-          "facebook": "https://facebook.com"
-        };
-        if (apps[app]) {
-          window.open(apps[app], '_blank');
-          addMessage("JARVIS", `Opening ${app}`);
-        } else {
-          addMessage("JARVIS", `App "${app}" not configured`);
+      // Device control commands
+      else if (/(turn on|turn off)\s+(wifi|bluetooth|flashlight)/i.test(command)) {
+        const action = command.match(/(turn on|turn off)/i)[0].toLowerCase();
+        const device = command.match(/(wifi|bluetooth|flashlight)/i)[0].toLowerCase();
+        
+        if (device === 'flashlight') toggleFlashlight();
+        else if (device === 'wifi') toggleWifi();
+        else if (device === 'bluetooth') toggleBluetooth();
+      }
+      // Battery status
+      else if (/battery (level|status)/i.test(command)) {
+        getBatteryLevel();
+      }
+      // Specific command processing
+      else if (lowerCommand.includes('youtube')) {
+        response = "Opening YouTube, Sir.";
+        addMessage(config.assistantName, response);
+        speak(response);
+        openAppOrWebsite('youtube');
+      }
+      else if (lowerCommand.includes('play music') || lowerCommand.includes('lofi')) {
+        response = "Playing music, Sir.";
+        addMessage(config.assistantName, response);
+        speak(response);
+        openAppOrWebsite('music');
+      }
+      else if (lowerCommand.includes('gmail') || lowerCommand.includes('email')) {
+        response = "Opening Gmail, Sir.";
+        addMessage(config.assistantName, response);
+        speak(response);
+        openAppOrWebsite('gmail');
+      }
+      else if (lowerCommand.includes('whatsapp')) {
+        response = "Opening WhatsApp, Sir.";
+        addMessage(config.assistantName, response);
+        speak(response);
+        openAppOrWebsite('whatsapp');
+      }
+      else if (lowerCommand.includes('instagram')) {
+        response = "Opening Instagram, Sir.";
+        addMessage(config.assistantName, response);
+        speak(response);
+        openAppOrWebsite('instagram');
+      }
+      else if (lowerCommand.includes('facebook')) {
+        response = "Opening Facebook, Sir.";
+        addMessage(config.assistantName, response);
+        speak(response);
+        openAppOrWebsite('facebook');
+      }
+      else if (lowerCommand.includes('time') || lowerCommand.includes('samay')) {
+        const now = new Date();
+        response = `It's ${now.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}`;
+        addMessage(config.assistantName, response);
+        speak(response);
+      }
+      else if (lowerCommand.includes('news') || lowerCommand.includes('khabar')) {
+        response = "Showing news headlines, Sir.";
+        addMessage(config.assistantName, response);
+        speak(response);
+        openAppOrWebsite('news');
+      }
+      else if (lowerCommand.includes('map') || lowerCommand.includes('location')) {
+        response = "Opening Google Maps, Sir.";
+        addMessage(config.assistantName, response);
+        speak(response);
+        openAppOrWebsite('maps');
+      }
+      else if (lowerCommand.includes('who is') || lowerCommand.includes('cm of')) {
+        const query = command.split('who is')[1] || command.split('cm of')[1] || "";
+        response = `Searching for ${query.trim() || 'that'}, Sir.`;
+        addMessage(config.assistantName, response);
+        speak(response);
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, '_blank');
+      }
+      else if (lowerCommand.includes('weather') || lowerCommand.includes('mausam')) {
+        response = "Checking weather, Sir.";
+        addMessage(config.assistantName, response);
+        speak(response);
+        window.open("https://www.google.com/search?q=weather", '_blank');
+      }
+      else if (lowerCommand.includes('stop') || lowerCommand.includes('band')) {
+        response = "Standing by, Sir.";
+        addMessage(config.assistantName, response);
+        speak(response);
+        stopListening();
+      }
+      else if (lowerCommand.includes('joke') || lowerCommand.includes('hasya')) {
+        const jokes = [
+          "Why don't scientists trust atoms? Because they make up everything!",
+          "Did you hear about the mathematician who's afraid of negative numbers? He'll stop at nothing to avoid them!",
+          "Why don't skeletons fight each other? They don't have the guts!"
+        ];
+        const randomJoke = jokes[Math.floor(Math.random() * jokes.length)];
+        response = randomJoke;
+        addMessage(config.assistantName, response);
+        speak(response);
+      }
+      else if (lowerCommand.includes('calculate') || lowerCommand.includes('compute')) {
+        const mathProblem = command.split('calculate')[1] || command.split('compute')[1] || "";
+        try {
+          const result = eval(mathProblem);
+          response = `The result is ${result}`;
+        } catch {
+          response = "I couldn't solve that math problem, Sir.";
         }
+        addMessage(config.assistantName, response);
+        speak(response);
       }
       else {
-        addMessage("JARVIS", "Command not recognized");
+        response = "I didn't understand that command, Sir.";
+        addMessage(config.assistantName, response);
+        speak(response);
       }
       
       stopListening();
     }
-    
-    // Helper Functions
+
+    // UI Helpers
+    function addMessage(sender, text) {
+      const messageDiv = document.createElement('div');
+      messageDiv.classList.add('message');
+      
+      if (sender === config.assistantName) {
+        messageDiv.classList.add('jarvis-message');
+        messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      } else if (sender === "System") {
+        messageDiv.classList.add('error-message');
+        messageDiv.innerHTML = `<em>${text}</em>`;
+      } else {
+        messageDiv.classList.add('user-message');
+        messageDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      }
+      
+      responseContainer.appendChild(messageDiv);
+      scrollToBottom();
+    }
+
+    function showError(message) {
+      addMessage("System", message);
+    }
+
+    function scrollToBottom() {
+      responseContainer.scrollTop = responseContainer.scrollHeight;
+    }
+
     function resetConversation() {
       responseContainer.innerHTML = '';
-      addMessage("JARVIS", "Systems reset. How may I assist you?");
+      addMessage(config.assistantName, "Conversation reset. How may I assist you, Sir?");
+      speak("Conversation reset. How may I assist you, Sir?");
     }
-    
-    function requestPermissions() {
-      navigator.mediaDevices.getUserMedia({ audio: true })
-        .then(() => addMessage("System", "Microphone access granted"))
-        .catch(() => addMessage("System", "Microphone access denied"));
-    }
-    
-    // Initialize
+
+    // Initialize on load
     window.addEventListener('load', () => {
-      if (!('webkitSpeechRecognition' in window)) {
-        addMessage("System", "Speech recognition not supported");
+      if (window.location.protocol !== 'https:' && !window.location.hostname.includes('localhost')) {
+        showError("For full functionality, please use HTTPS or localhost");
       }
+      initializeJarvis();
     });
   </script>
 </body>
